@@ -5,7 +5,7 @@ terraform {
     storage_account_name = "sttfstatealzdc9f8027"
     container_name       = "tfstate"
     key                  = "platform-alz.tfstate"
-    use_oidc             = false
+    use_oidc             = true
     use_azuread_auth     = true
   }
 }

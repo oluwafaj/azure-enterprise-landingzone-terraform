@@ -12,7 +12,7 @@ provider "azurerm" {
   alias = "connectivity"
   features {}
   subscription_id = var.connectivity_subscription_id
-  use_oidc        = false
+  use_oidc        = true
 }
 
 provider "azapi" {

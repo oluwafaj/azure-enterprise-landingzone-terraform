@@ -15,6 +15,11 @@ jobs:
   platform-landing-zone:
     name: "01 - Platform Landing Zone"
     runs-on: ubuntu-latest
+    env:
+      ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+      ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+      ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_MANAGEMENT_SUBSCRIPTION_ID }}
+      ARM_USE_OIDC: true
     defaults:
       run:
         working-directory: ./01-platform-landing-zone
@@ -49,6 +54,11 @@ jobs:
     name: "02 - Workload Landing Zone"
     needs: platform-landing-zone
     runs-on: ubuntu-latest
+    env:
+      ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+      ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+      ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_WORKLOAD_SUBSCRIPTION_ID }}
+      ARM_USE_OIDC: true
     defaults:
       run:
         working-directory: ./02-workload-landing-zone
