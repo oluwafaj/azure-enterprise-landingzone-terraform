@@ -1,0 +1,9 @@
+workload_name                = "orders"
+environment                  = "prod"
+location                     = "uksouth"
+workload_subscription_id     = "1adf80ff-67ea-4ac7-91eb-3a328416d9b7"
+connectivity_subscription_id = "1adf80ff-67ea-4ac7-91eb-3a328416d9b7"
+spoke_vnet_address_space     = ["10.10.0.0/16"]
+app_subnet_prefix            = "10.10.1.0/24"
+pe_subnet_prefix             = "10.10.2.0/24"
+tfstate_storage_account_name = "sttfstatealzdc9f8027"

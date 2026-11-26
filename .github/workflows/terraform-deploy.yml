@@ -1,0 +1,80 @@
+name: Azure Landing Zone & Workload Terraform
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+permissions:
+  id-token: write
+  contents: read
+  pull-requests: write
+
+jobs:
+  platform-landing-zone:
+    name: "01 - Platform Landing Zone"
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./01-platform-landing-zone
+    steps:
+      - uses: actions/checkout@v4
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.9.8
+
+      - name: Azure Login via OIDC
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_MANAGEMENT_SUBSCRIPTION_ID }}
+
+      - name: Terraform Format & Init
+        run: |
+          terraform fmt -check
+          terraform init
+
+      - name: Terraform Validate & Plan
+        run: |
+          terraform validate
+          terraform plan -var-file="environments/prod.tfvars" -out=tfplan
+
+      - name: Terraform Apply (Main Branch Only)
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        run: terraform apply -auto-approve tfplan
+
+  workload-landing-zone:
+    name: "02 - Workload Landing Zone"
+    needs: platform-landing-zone
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./02-workload-landing-zone
+    steps:
+      - uses: actions/checkout@v4
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.9.8
+
+      - name: Azure Login via OIDC
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_WORKLOAD_SUBSCRIPTION_ID }}
+
+      - name: Terraform Format & Init
+        run: |
+          terraform fmt -check
+          terraform init
+
+      - name: Terraform Validate & Plan
+        run: |
+          terraform validate
+          terraform plan -var-file="environments/prod.tfvars" -out=tfplan
+
+      - name: Terraform Apply (Main Branch Only)
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        run: terraform apply -auto-approve tfplan
